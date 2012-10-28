@@ -1,4 +1,5 @@
 # Oauthex
+A wrapper around [erlang-oauth](https://github.com/tim/erlang-oauth) for [elixir](http://elixir-lang.org/).
 
 # Example
 See `bin/twitter.mxs` for a quick example. To use this script:
