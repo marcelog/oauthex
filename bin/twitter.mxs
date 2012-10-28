@@ -1,0 +1,67 @@
+Application.start(:oauthex)
+
+defmodule TwitterCli do
+
+  def read_tweets() do
+    receive do
+      {:http, {_ref, :stream, tweet}} -> IO.inspect tweet
+    end
+    read_tweets
+  end
+
+  def command(_url, [consumer_key, consumer_secret, token, secret, "track", word]) do
+    consumer = Oauthex.Consumer.new(
+      key: :erlang.binary_to_list(consumer_key),
+      secret: :erlang.binary_to_list(consumer_secret)
+    )
+    reqinfo = Oauthex.ReqInfo.new(
+      token: :erlang.binary_to_list(token),
+      secret: :erlang.binary_to_list(secret)
+    )
+    Oauthex.post \
+      'https://stream.twitter.com/1.1/statuses/filter.json',
+      [{'track', binary_to_list(word)}], consumer, reqinfo
+    read_tweets
+  end
+
+  def command(url, [consumer_key, consumer_secret]) do
+    consumer = Oauthex.Consumer.new(
+      key: :erlang.binary_to_list(consumer_key),
+      secret: :erlang.binary_to_list(consumer_secret)
+    )
+    reqinfo = Oauthex.request_token '#{url}/request_token', [], consumer
+    IO.puts '''
+
+You secret is: #{reqinfo.secret}
+
+Your auth url is:
+
+  #{url}/authenticate?oauth_token=#{reqinfo.token}
+  
+Please visit it with your browser. Then run
+
+$ twitter.mxs #{consumer_key} #{consumer_secret} #{reqinfo.token} #{reqinfo.secret}
+
+  
+  '''
+  end
+
+  def command(url, [consumer_key, consumer_secret, token, secret]) do
+    consumer = Oauthex.Consumer.new(
+      key: :erlang.binary_to_list(consumer_key),
+      secret: :erlang.binary_to_list(consumer_secret)
+    )
+    reqinfo = Oauthex.ReqInfo.new(
+      token: :erlang.binary_to_list(token),
+      secret: :erlang.binary_to_list(secret)
+    )
+    accinfo = Oauthex.access_token '#{url}/access_token', [], consumer, reqinfo
+    IO.puts '''
+Your access token is: #{accinfo.token}
+
+You access secret is: #{accinfo.secret}
+'''
+  end
+end
+
+TwitterCli.command 'https://api.twitter.com/oauth', System.argv()
