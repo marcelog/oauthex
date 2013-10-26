@@ -21,7 +21,7 @@ defmodule Oauthex.Mixfile do
   defp deps do
     [
       {:exlager,"~> 0.2.0",[github: "khia/exlager"]},
-      {:oauth, "1.3.0", [github: "tim/erlang-oauth", tag: "v1.3.0"]}
+      {:oauth, "1.4.0", [github: "tim/erlang-oauth"]}
     ]
   end
 end
