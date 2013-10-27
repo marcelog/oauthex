@@ -1,4 +1,4 @@
-Application.start(:oauthex)
+:application.start(:oauthex)
 
 defmodule TwitterCli do
 
@@ -11,23 +11,23 @@ defmodule TwitterCli do
 
   def command(_url, [consumer_key, consumer_secret, token, secret, "track", word]) do
     consumer = Oauthex.Consumer.new(
-      key: :erlang.binary_to_list(consumer_key),
-      secret: :erlang.binary_to_list(consumer_secret)
+      key:    String.to_char_list!(consumer_key),
+      secret: String.to_char_list!(consumer_secret)
     )
     reqinfo = Oauthex.ReqInfo.new(
-      token: :erlang.binary_to_list(token),
-      secret: :erlang.binary_to_list(secret)
+      token:  String.to_char_list!(token),
+      secret: String.to_char_list!(secret)
     )
     Oauthex.post \
       'https://stream.twitter.com/1.1/statuses/filter.json',
-      [{'track', binary_to_list(word)}], consumer, reqinfo
+      [{'track', String.to_char_list!(word)}], consumer, reqinfo
     read_tweets
   end
 
   def command(url, [consumer_key, consumer_secret]) do
     consumer = Oauthex.Consumer.new(
-      key: :erlang.binary_to_list(consumer_key),
-      secret: :erlang.binary_to_list(consumer_secret)
+      key:    String.to_char_list!(consumer_key),
+      secret: String.to_char_list!(consumer_secret)
     )
     reqinfo = Oauthex.request_token '#{url}/request_token', [], consumer
     IO.puts '''
@@ -48,12 +48,12 @@ $ twitter.mxs #{consumer_key} #{consumer_secret} #{reqinfo.token} #{reqinfo.secr
 
   def command(url, [consumer_key, consumer_secret, token, secret]) do
     consumer = Oauthex.Consumer.new(
-      key: :erlang.binary_to_list(consumer_key),
-      secret: :erlang.binary_to_list(consumer_secret)
+      key:    String.to_char_list!(consumer_key),
+      secret: String.to_char_list!(consumer_secret)
     )
     reqinfo = Oauthex.ReqInfo.new(
-      token: :erlang.binary_to_list(token),
-      secret: :erlang.binary_to_list(secret)
+      token:  String.to_char_list!(token),
+      secret: String.to_char_list!(secret)
     )
     accinfo = Oauthex.access_token '#{url}/access_token', [], consumer, reqinfo
     IO.puts '''
